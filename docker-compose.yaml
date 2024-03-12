@@ -4,6 +4,31 @@ networks:
     datapipeline:
 
 services: 
+
+  facade:
+    build:
+      ./facade
+    ports:
+      - '8080:8080'
+    depends_on:
+      - hazelcast-3
+      - hazelcast-2
+      - hazelcast-1
+    networks:
+      - datapipeline
+
+  messages:
+    build:
+      ./messages
+    ports:
+      - '8082:8082'
+    depends_on:
+      - hazelcast-3
+      - hazelcast-2
+      - hazelcast-1
+    networks:
+      - datapipeline
+
   hazelcast-1:
     build: ./hazelcast
     container_name: hazelcast-1
@@ -11,6 +36,16 @@ services:
       - '5701:5701'
     environment:
       HZ_CLUSTERNAME: logs
+    networks:
+      - datapipeline
+
+  logging-1:
+    build: ./logging-1
+    ports:
+      - '8081:8081'
+    depends_on:
+      - hazelcast-1
+
     networks:
       - datapipeline
 
@@ -24,6 +59,15 @@ services:
     networks:
       - datapipeline
 
+  logging-2:
+    build: ./logging-2
+    ports:
+      - '8084:8084'
+    depends_on:
+      - hazelcast-2
+    networks:
+      - datapipeline
+
   hazelcast-3:
     build: ./hazelcast
     container_name: hazelcast-3
@@ -34,142 +78,11 @@ services:
     networks:
       - datapipeline
 
-  task-1:
-    build:
-      ./task-1
-    depends_on:
-      - hazelcast-3
-      - hazelcast-2
-      - hazelcast-1
-    networks:
-      - datapipeline
-
-
-  without-1:
-    build:
-      ./client_1
-    depends_on:
-      - hazelcast-3
-      - hazelcast-2
-      - hazelcast-1
-    networks:
-      - datapipeline
-
-  without-2:
-    build:
-      ./client_1
-    depends_on:
-      - hazelcast-3
-      - hazelcast-2
-      - hazelcast-1
-    networks:
-      - datapipeline
-
-  without-3:
-    build:
-      ./client_1
-    depends_on:
-      - hazelcast-3
-      - hazelcast-2
-      - hazelcast-1
-    networks:
-      - datapipeline
-
-  pesimistic-1:
-    build:
-      ./client_2
-    depends_on:
-      - hazelcast-3
-      - hazelcast-2
-      - hazelcast-1
-    networks:
-      - datapipeline
-
-  pesimistic-2:
-    build:
-      ./client_2
-    depends_on:
-      - hazelcast-3
-      - hazelcast-2
-      - hazelcast-1
-    networks:
-      - datapipeline
-
-  pesimistic-3:
-    build:
-      ./client_2
-    depends_on:
-      - hazelcast-3
-      - hazelcast-2
-      - hazelcast-1
-    networks:
-      - datapipeline
-
-  optimistic-1:
-    build:
-      ./client_3
-    depends_on:
-      - hazelcast-3
-      - hazelcast-2
-      - hazelcast-1
-    networks:
-      - datapipeline
-
-  optimistic-2:
-    build:
-      ./client_3
-    depends_on:
-      - hazelcast-3
-      - hazelcast-2
-      - hazelcast-1
-    networks:
-      - datapipeline
-
-  optimistic-3:
-    build:
-      ./client_3
-    depends_on:
-      - hazelcast-3
-      - hazelcast-2
-      - hazelcast-1
-    networks:
-      - datapipeline
-
-
-  producer:
-    build:
-      ./producer
-    depends_on:
-      - hazelcast-3
-      - hazelcast-2
-      - hazelcast-1
-    networks:
-      - datapipeline
-
-  first_reader:
-    build:
-      ./first_reader
-    depends_on:
-      - hazelcast-3
-      - hazelcast-2
-      - hazelcast-1
-    networks:
-      - datapipeline
-
-  second_reader:
-    build:
-      ./second_reader
-    depends_on:
-      - hazelcast-3
-      - hazelcast-2
-      - hazelcast-1
-    networks:
-      - datapipeline
-
-  management-center:
-    image: hazelcast/management-center
-    container_name: management-center
+  logging-3:
+    build: ./logging-3
     ports:
-      - '8080:8080'
+      - '8085:8085'
+    depends_on:
+      - hazelcast-3
     networks:
       - datapipeline
